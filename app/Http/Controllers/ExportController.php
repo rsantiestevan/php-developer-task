@@ -9,6 +9,9 @@ use Bueltge\Marksimple\Marksimple;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\ExportSelected;
 
+
+use App\Reports\ExportCsv;
+
 class ExportController extends Controller
 {
     public function __construct()
@@ -41,7 +44,14 @@ class ExportController extends Controller
      */
     public function export(ExportSelected $request)
     {
-        //
+        $selected = $request->all();
+        $file = $selected['filename']!='' ? $selected['filename'] : null;
+        $fieldNames = Student::getFieldNames();
+        $listData = Student::generateReport($selected['studentId']);
+        $export = new ExportCsv($file);
+        
+        return $export->getCsv($listData, $fieldNames);
+        
     }
 
     /**
